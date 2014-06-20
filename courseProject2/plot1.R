@@ -2,8 +2,9 @@ require(reshape2)
 require(data.table)
 
 # set work dir and list file
-setwd("D:/doc/study/dataScientists/4-Exploratory Data Analysis/course project/course project 2")
-dir()
+#setwd("D:/doc/study/dataScientists/4-Exploratory Data Analysis/course project/course project 2")
+setwd("d:/study/git/Exploratory-Data-Analysis/courseProject2")
+# dir()
 
 ## This first line will likely take a few seconds. Be patient!
 NEI <- data.table(readRDS("summarySCC_PM25.rds"))
@@ -16,5 +17,5 @@ NEI <- data.table(readRDS("summarySCC_PM25.rds"))
 total_emssions_each_year<-NEI[,sum(Emissions),by=year]
 
 png(filename = "plot1.png", width=480,height=480)
-plot(total_emssions_each_year$year, total_emssions_each_year$V1, type="l", xlab="year", ylab="", main="Total Emissions(tons)")
+plot(total_emssions_each_year$year, total_emssions_each_year$V1, type="l", xlab="year", ylab="Total Emissions(tons)", main="Total Emissions(tons) in the United States")
 dev.off()

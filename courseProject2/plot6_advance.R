@@ -5,9 +5,9 @@ require(reshape2)
 require(data.table)
 
 # set work dir and list file
-#setwd("D:/doc/study/dataScientists/4-Exploratory Data Analysis/course project/course project 2")
+setwd("D:/doc/study/dataScientists/4-Exploratory Data Analysis/course project/course project 2")
 #dir()
-setwd("D:/workspace/dataScientists/4-ExploratoryDataAnalysis/course_project2")
+#setwd("D:/workspace/dataScientists/4-ExploratoryDataAnalysis/course_project2")
 
 ## This first line will likely take a few seconds. Be patient!
 NEI <- data.table(readRDS("summarySCC_PM25.rds"))
@@ -107,4 +107,28 @@ qplot(year, growth_rate, data=r2, geom="bar", stat="identity",facets=.~city_name
 
 g<-ggplot(r, aes(x=year, y=growth_rate,fill=city_name))
 g+geom_bar(stat="identity",position="dodge")+labs(y="Emssion year Growth rate",title="Emissions from motor vehicle sourcess")
+
+# 将变化都按第一年折算，可能更容易看出来
+jz<-city_sum[city_sum$fips=="24510" & year==1999,]$total_Emission
+city_sum[city_sum$fips=="24510", multiple:=total_Emission/jz]
+
+jz<-city_sum[city_sum$fips=="06037" & year==1999,]$total_Emission
+city_sum[city_sum$fips=="06037", multiple:=total_Emission/jz]
+
+# 2张图
+par(mfrow=c(1,2))
+with(city_sum[city_sum$fips=="24510",], plot(year, multiple, type="o", xlab="year", ylab="Emission growth rate", sub="Baltimore City, Maryland", col="blue"))
+with(city_sum[city_sum$fips=="06037",], plot(year, multiple, type="o", xlab="year", ylab="Emission growth rate", sub="Los Angeles County, California", col="red"))
+
+qplot(year, multiple, data=city_sum, geom="bar", stat="identity",facets=.~city_name,fill=city_name)+labs(y="Emssion year Growth rate",title="Emissions from motor vehicle sourcess")
+
+# 1张图里
+par(mfrow = c(1, 1), mar = c(4, 4, 2, 1))
+rng<-range(city_sum$multiple)
+with(city_sum, plot(year, multiple, col="red",ylab="Total Emissions(tons) growth multiple"),ylim = rng,pch=1)
+
+with(subset(city_sum,fips=="06037"), lines(year, multiple, type="o", col="red"))
+with(subset(city_sum,fips=="24510"), lines(year, multiple, type="o", col="blue"))
+
+qplot(year,multiple, data=city_sum)+geom_line()+labs(title="emissions from motor vehicle sources in 2 Cities", y="total emssions")+geom_smooth(method="lm")+facet_grid(facets=.~fips)
 

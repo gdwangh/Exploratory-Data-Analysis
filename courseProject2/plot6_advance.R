@@ -1,13 +1,13 @@
-# 关于第6个图的进一步思考和学习
+# 关于�?6个图的进一步思考和学习
 
 require(ggplot2)
 require(reshape2)
 require(data.table)
 
 # set work dir and list file
-setwd("D:/doc/study/dataScientists/4-Exploratory Data Analysis/course project/course project 2")
+#setwd("D:/doc/study/dataScientists/4-Exploratory Data Analysis/course project/course project 2")
 #dir()
-#setwd("D:/workspace/dataScientists/4-ExploratoryDataAnalysis/course_project2")
+setwd("D:/workspace/dataScientists/4-ExploratoryDataAnalysis/tmp")
 
 ## This first line will likely take a few seconds. Be patient!
 NEI <- data.table(readRDS("summarySCC_PM25.rds"))
@@ -39,7 +39,7 @@ city_sum<-city_vehicles_NIE[, sum(Emissions), by=list(year,fips)]
 # names(city_sum)[3]<-"Emission_sum"
 setnames(city_sum, "V1", "total_Emission")
 
-# 两个城市的值差几倍，必须设置range否则放到一张图上时，无法显示完整
+# 两个城市的值差几倍，必须设置range否则放到一张图上时，无法显示完�?
 rng <- range(city_sum$total_Emission, na.rm = T)
 par(mfrow = c(1, 1), mar = c(4, 4, 2, 1))
 
@@ -64,7 +64,7 @@ with(subset(city_sum,fips=="24510"), abline(lm(total_Emission~year)))
 #ggplot2
 qplot(year,total_Emission, data=city_sum, facets=.~fips,geom=c("point","smooth"),method="lm")+geom_line()+labs(y="total emssions")+labs(title="emissions from motor vehicle sources in 2 Cities")
 
-# 将ID转换为name，注意，id不同，排列顺序不同，可能对应的label会不同
+# 将ID转换为name，注意，id不同，排列顺序不同，可能对应的label会不�?
 city_sum$city_name<-factor(city_sum$fips,labels=c("LA", "Baltimore"))
 qplot(year,total_Emission, data=city_sum)+geom_line()+labs(title="emissions from motor vehicle sources in 2 Cities", y="total emssions")+geom_smooth(method="lm")+facet_grid(facets=.~city_name,labeller=label_parsed)
 
@@ -92,7 +92,7 @@ par(mfrow = c(1, 2))
 with(bal_gr, plot(year, growth_rate, type="o", xlab="year", ylab="Emission growth rate", main="Baltimore City, Maryland", col="blue",ylim = rng))
 with(LA_gr, plot(year, growth_rate, type="o", xlab="year", ylab="Emission growth rate", main="Los Angeles County, California", col="red",ylim = rng))
 
-# 折线图看不出感觉，改为bar图
+# 折线图看不出感觉，改为bar�?
 par(mfrow=c(1,1))
 m_bal<-matrix(bal_gr$growth_rate, ncol=nrow(bal_gr),byrow=TRUE)
 m_LA<-matrix(LA_gr$growth_rate, ncol=nrow(LA_gr),byrow=TRUE)
@@ -122,7 +122,11 @@ with(city_sum[city_sum$fips=="06037",], plot(year, multiple, type="o", xlab="yea
 
 qplot(year, multiple, data=city_sum, geom="bar", stat="identity",facets=.~city_name,fill=city_name)+labs(y="Emssion year Growth rate",title="Emissions from motor vehicle sourcess")
 
-# 1张图里
+g<-ggplot(city_sum, aes(x=year, y=multiple,fill=city_name))
+g+geom_bar(stat="identity",position="dodge")+labs(y="Emssion year Growth rate",title="Emissions from motor vehicle sourcess")
+
+
+# 1张图�?
 par(mfrow = c(1, 1), mar = c(4, 4, 2, 1))
 rng<-range(city_sum$multiple)
 with(city_sum, plot(year, multiple, col="red",ylab="Total Emissions(tons) growth multiple"),ylim = rng,pch=1)
@@ -130,5 +134,5 @@ with(city_sum, plot(year, multiple, col="red",ylab="Total Emissions(tons) growth
 with(subset(city_sum,fips=="06037"), lines(year, multiple, type="o", col="red"))
 with(subset(city_sum,fips=="24510"), lines(year, multiple, type="o", col="blue"))
 
-qplot(year,multiple, data=city_sum)+geom_line()+labs(title="emissions from motor vehicle sources in 2 Cities", y="total emssions")+geom_smooth(method="lm")+facet_grid(facets=.~fips)
+qplot(year,multiple, data=city_sum)+geom_line()+labs(title="emissions from motor vehicle sources in 2 Cities", y="total emssions")+facet_grid(facets=.~city_name)
 
